@@ -19,10 +19,21 @@ def start(mes):
     bot.register_next_step_handler(mes, generate_a_link)
 
 def generate_a_link(message):
-    recieved_link = message.text
-    id = recieved_link[recieved_link.rindex("/") + 1 : ]
-    link = linkgen.generate_download_link(id)
-    bot.send_message(message.chat.id,"Перейдите по этой ссылке и скачайте файл: "+ link)
+    try:
+        recieved_link = message.text
+        id = recieved_link[recieved_link.rindex("/") + 1 : ]
+        try:
+            int(id)
+        except:
+            msg = bot.send_message(message.chat.id, 'Введите правильную ссылку')
+            bot.register_next_step_handler(msg, generate_a_link)
+            return
+        link = linkgen.generate_download_link(id)
+        bot.send_message(message.chat.id,"Перейдите по этой ссылке и скачайте файл: "+ link)
+    except:
+        msg = bot.send_message(message.chat.id, 'Введите правильную ссылку')
+        bot.register_next_step_handler(msg, generate_a_link)
+        return
 
 #вывод словаря
 @bot.message_handler(commands=["out"])
