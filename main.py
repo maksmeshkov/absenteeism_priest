@@ -6,15 +6,22 @@ def line_has_lesson(line):
 
 
 def get_absences():
-    parsed = open("parsed.txt", "r")
+    parsed = open("parsed.txt", "r", encoding="UTF-8")
 
     visits_schedule = {
         # "lesson_name" : amount of skips
     }
 
+    amount_of_visited_lessons = {
+        # "lesson_name" : amount of visited lessons
+    }
+
+
     for line in parsed:
         if "8" >= line[0] >= "1":
             if line_has_lesson(line):
+                # lesson_name = line[10:36].strip()
+                amount_of_visited_lessons[line[10:36].strip()] = amount_of_visited_lessons.get(line[10:36].strip(), 0) + 1
                 if "   н" in line[70:100]:
                     visits_schedule[line[10:36].strip()] = visits_schedule.get(line[10:36].strip(), 0) + 1
             else:
@@ -23,6 +30,7 @@ def get_absences():
         else:
             if line[0] == " ":
                 previous_line = line[10:36].strip()
+
     return visits_schedule
 
 
