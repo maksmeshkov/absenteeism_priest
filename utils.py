@@ -8,9 +8,9 @@ from telebot import types
 
 from parser import get_absences
 
-token = "956795464:AAE4s0E_0rmwNgEy1gOM8FNAmibuprEyUXU"
+token = "    "
 bot = telebot.TeleBot(token)
-proxy = {'https': "socks5://DHGuCN:BRqGKg@77.83.30.144:8000"}
+proxy = {'https': "    "}
 apihelper.proxy = proxy
 
 startup_msg = """
