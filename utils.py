@@ -13,13 +13,17 @@ bot = telebot.TeleBot(token)
 proxy = {'https': "socks5://DHGuCN:BRqGKg@77.83.30.144:8000"}
 apihelper.proxy = proxy
 
-startup_msg = """Я выведу количество твоих прогулов за год по каждому предмету. 
+startup_msg = """
+Я выведу количество твоих прогулов за год по каждому предмету. 
 Для начала открой в браузере свой дневник на dnevnik.mos.ru, подожди когда загрузится главная страница и отправь мне ссылку на нее. 
 
 Сылка должна иметь вид https://dnevnik.mos.ru/student_diary/student_diary/1234567
 """
+
 help_msg = "Чем тебе помочь?"
+
 error_msg = "Я тебя не понимаю, нажми на кнопку *Помощь*"
+
 again_msg = """
 Для начала открой в браузере свой дневник на dnevnik.mos.ru, подожди когда загрузится главная страница и отправь мне ссылку на нее. 
 
@@ -30,13 +34,11 @@ again_msg = """
 
 
 def out_keyboard(message, error=False):
-    keyboard = types.ReplyKeyboardMarkup()
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     key_help = types.KeyboardButton(text='Помощь')
     keyboard.add(key_help)
     key_print = types.KeyboardButton(text='Мои прогулы')
     keyboard.add(key_print)
-    # key_upload = types.KeyboardButton(text='Обработай файл')
-    # keyboard.add(key_upload)
     if not error:
         bot.send_message(text=startup_msg, chat_id=message.chat.id, reply_markup=keyboard)
     if error:
@@ -68,14 +70,42 @@ def out_dict(message):
     pdf_name = r"files/" + message.chat.first_name + ".pdf"
     if os.path.isfile(pdf_name):
         if os.path.isfile(parsed_name):
-            formatted_dict = ""
-            book = get_dict(message.chat.first_name)
-            for k, v in book.items():
-                formatted_dict += (str(k) + " - " + str(v) + "\n")
-            if formatted_dict != "":
-                bot.send_message(message.chat.id, formatted_dict)
-            else:
-                bot.send_message(message.chat.id, "В загруженном файле не обнаружено расписание.")
+            fancy_out = ""
+            fancy_list = []
+            dict_skips, dict_total = get_dict(message.chat.first_name)
+            lessons_info = {
+                "skips": dict_skips,
+                "total": dict_total
+            }
+            for lesson_name, lesson_total in dict_total.items():
+                if lesson_name == "":
+                    pass
+                else:
+                    if lesson_name not in dict_skips:
+                        skips = 0
+                    else:
+                        skips = lessons_info["skips"][lesson_name]
+                    total = lessons_info["total"][lesson_name]
+                    skips_percentage = int(skips) / int(total)
+                    if skips_percentage >= 0.5:
+                        color = "💀"  # black
+                    if 0.4 <= skips_percentage < 0.5:
+                        color = "🔴"  # red
+                    if 0.3 <= skips_percentage < 0.4:
+                        color = "🟡"  # yellow
+                    if 0 <= skips_percentage < 0.3:
+                        color = "🟢"  # green
+                    else:
+                        color = "⚪"  # white
+                    spaces = " " * (21 - len(lesson_name))
+                    if int(skips) < 10:
+                        spaces += " "
+                    fancy_list.append(("`" + color + lesson_name + ": " + spaces + str(skips) +
+                                       " прогулов из " + str(total) + "`" + "\n"))
+                    fancy_list.sort()
+            for line in fancy_list:
+                fancy_out += line
+            bot.send_message(message.chat.id, fancy_out, parse_mode="Markdown")
         else:
             parse_file(message.chat.first_name)
     else:
@@ -109,8 +139,8 @@ def get_file(message):
 
 
 def get_dict(first_name):
-    absences = get_absences(first_name)
-    return absences
+    absences, total_lessons = get_absences(first_name)
+    return absences, total_lessons
 
 
 def get_dlink(message):
@@ -123,8 +153,7 @@ def get_dlink(message):
     link = "https://dnevnik.mos.ru/reports/api/student_journal" \
            "/pdf?student_profile_id=" + student_id + "&begin_date=01.09.2019&end_date=" + date + "&scale=five "
     support_msg = """
-    Отлично!
-    Теперь отправь мне файл который открывается у тебя по сгенерированной ссылке: 
+👌  Теперь отправь мне файл который открывается у тебя по сгенерированной ссылке: 
     """ + "\n" + link + """
 
 Если у тебя айфон, то просто открой эту ссылку в браузере (если открывать через телеграм то может не открыться:

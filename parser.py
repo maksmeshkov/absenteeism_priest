@@ -16,16 +16,14 @@ def get_absences(username):
         # "lesson_name" : amount of skips
     }
 
-    amount_of_visited_lessons = {
-        # "lesson_name" : amount of visited lessons
+    total_lessons = {
+        # "lesson_name" : total amount of lessons
     }
 
     for line in parsed:
         if "8" >= line[0] >= "1":
             if line_has_lesson(line):
-                # lesson_name = line[10:36].strip()
-                amount_of_visited_lessons[line[10:36].strip()] = amount_of_visited_lessons.get(line[10:36].strip(),
-                                                                                               0) + 1
+                total_lessons[line[10:36].strip()] = total_lessons.get(line[10:36].strip(), 0) + 1
                 if "   н" in line[70:100]:
                     visits_schedule[line[10:36].strip()] = visits_schedule.get(line[10:36].strip(), 0) + 1
             else:
@@ -35,12 +33,11 @@ def get_absences(username):
             if line[0] == " ":
                 previous_line = line[10:36].strip()
 
-    return visits_schedule
+    return visits_schedule, total_lessons
 
 
 def parse_file(username):
     # короче вся эта херня будет запускатся на линукс сервере с установленным pdftotext
     pdf_name = r"files/" + username + ".pdf"
     parsed_name = r"files/" + username + "_parsed.txt"
-
     subprocess.run(["pdftotext", "-layout", str(pdf_name), parsed_name])
