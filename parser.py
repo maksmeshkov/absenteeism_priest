@@ -11,7 +11,7 @@ def line_has_lesson(line):
 def get_absences(username):
     filename = r"files/" + username + "_parsed.txt"
     parsed = open(filename, "r", encoding="UTF-8")
-
+    previous_line = ""
     visits_schedule = {
         # "lesson_name" : amount of skips
     }
