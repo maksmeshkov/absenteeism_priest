@@ -3,9 +3,9 @@ from telebot import apihelper
 
 from utils import out_keyboard, out_dict, out_help, get_file, get_dlink
 
-token = "956795464:AAE4s0E_0rmwNgEy1gOM8FNAmibuprEyUXU"
+token = "   "
 bot = telebot.TeleBot(token)
-proxy = {'https': "socks5://DHGuCN:BRqGKg@77.83.30.144:8000"}
+proxy = {'https': "    "}
 apihelper.proxy = proxy
 
 
