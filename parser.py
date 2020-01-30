@@ -9,7 +9,7 @@ def line_has_lesson(line):
 
 
 def get_absences(username):
-    filename = r"files/" + username + "_parsed.txt"
+    filename = r"./files/" + username + "_parsed.txt"
     parsed = open(filename, "r", encoding="UTF-8")
     previous_line = ""
     stripped_line = ""
@@ -48,6 +48,6 @@ def get_absences(username):
 
 def parse_file(username):
     # короче вся эта херня будет запускатся на линукс сервере с установленным pdftotext
-    pdf_name = r"files/" + username + ".pdf"
-    parsed_name = r"files/" + username + "_parsed.txt"
+    pdf_name = r"./files/" + username + ".pdf"
+    parsed_name = r"./files/" + username + "_parsed.txt"
     subprocess.run(["pdftotext", "-layout", str(pdf_name), parsed_name])

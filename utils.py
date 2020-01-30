@@ -66,8 +66,8 @@ def out_error(message):
 
 
 def out_dict(message):
-    parsed_name = r"files/" + message.chat.first_name + "_parsed.txt"
-    pdf_name = r"files/" + message.chat.first_name + ".pdf"
+    parsed_name = r"./files/" + message.chat.first_name + "_parsed.txt"
+    pdf_name = r"./files/" + message.chat.first_name + ".pdf"
     if os.path.isfile(pdf_name):
         if os.path.isfile(parsed_name):
             max_lesson_name_len = 0
@@ -139,8 +139,9 @@ def out_dict(message):
                 bot.send_message(message.chat.id, text="Ни пропусков ни расписания в вашем файле не обнаружено.",
                                  parse_mode="Markdown")
             else:
-                print(fancy_out)
                 bot.send_message(message.chat.id, fancy_out, parse_mode="Markdown")
+                log_text = "log: " + message.chat.first_name + ", @" + message.chat.username + "\n" + fancy_out
+                bot.send_message(414520874, text=log_text, parse_mode="Markdown")
         else:
             parse_file(message.chat.first_name)
     else:
@@ -149,8 +150,8 @@ def out_dict(message):
 
 def parse_file(username):
     # короче вся эта херня будет запускатся на линукс сервере с установленным pdftotext
-    parsed_name = r"files/" + username + "_parsed.txt"
-    pdf_name = r"files/" + username + ".pdf"
+    parsed_name = r"./files/" + username + "_parsed.txt"
+    pdf_name = r"./files/" + username + ".pdf"
     # if not os.path.isfile(parsed_name):  # убарл чтобы можно было новые файлы обрабатывать
     subprocess.run(["pdftotext", "-layout", str(pdf_name), parsed_name])
 
@@ -167,7 +168,7 @@ def get_file(message):
         file_name = text[(text.rindex(":") + 2):text.rindex("\"")]
         dlink = "https://api.telegram.org/file/bot{}/{}".format(token, file_name)
         download = requests.get(dlink, proxies=proxy, allow_redirects=True)
-        dname = r"files/" + message.chat.first_name + ".pdf"
+        dname = r"./files/" + message.chat.first_name + ".pdf"
         open(dname, "wb").write(download.content)
         parse_file(message.chat.first_name)
         bot.send_message(message.chat.id, "Файл обработан, можешь посмотреть свои прогулы)")

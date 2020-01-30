@@ -1,4 +1,5 @@
 import telebot
+import logging
 from telebot import apihelper
 
 from utils import out_keyboard, out_dict, out_help, get_file, get_dlink
@@ -36,5 +37,8 @@ def callback_worker(call):
     if call.data == "again":
         out_help(call.message, error_code="again")
 
-
-bot.polling(none_stop=True)
+while True:
+    try:
+        bot.polling(none_stop=True)
+    except Exception as err:
+        logging.error(err)
